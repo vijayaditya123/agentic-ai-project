@@ -1,0 +1,3 @@
+olist_customers_dataset.csv : "customer_id","customer_unique_id","customer_zip_code_prefix","customer_city","customer_state"
+olist_geolocation_dataset.csv : "geolocation_zip_code_prefix","geolocation_lat","geolocation_lng","geolocation_city","geolocation_state"
+ 
