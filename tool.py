@@ -1,6 +1,7 @@
 from sqlalchemy import inspect,text
 from db import engine_read
-import math
+from datetime import datetime
+import matplotlib.pyplot as plt
 def get_schema():
     insp = inspect(engine_read)
     lines =[]
@@ -85,4 +86,45 @@ OPERATIONS = {
     "average":    lambda v: sum(v) / len(v),
     "percentage": lambda v: v[0] / v[1] * 100,
 }
+
+def make_chart(chart_type, title, labels=None, values=None, x_values=None, x_label=None, y_label=None):
+    if chart_type not in {"bar", "horizontal_bar", "line", "pie", "scatter", "histogram"}:
+        return f"{chart_type} is not available we can return charts charts like bar,horizontal_bar, line,pie,scatter,histogram" 
+
+    if chart_type in  {"bar", "horizontal_bar", "line", "pie"} and (title is None or labels is None or values is None):
+        return "Error : requied values are missing"
+
+    if chart_type == "scatter" and (x_values is None or values is None):
+        return "Error: scatter needs x_values and values."
+
+    if chart_type == "horizontal_bar" and (labels is None or values is None):
+        return "Error: horizontal_bar needs labels and values."
+
+    fig, ax = plt.subplots()
+    graph[chart_type](ax,title, labels, values, x_values, x_label, y_label)
+    ax.set_title(title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    path = f"charts/{chart_type}_{datetime.now():%Y%m%d%H%M%S}.png"
+    fig.savefig(path)
+    plt.close(fig)
+    return path
+
+
+
+
+graph={
+    "line": lambda ax,title, labels, values, x_values, x_label, y_label : ax.plot(labels, values, marker="o"),
+    "bar":lambda ax,title, labels, values, x_values, x_label, y_label : ax.bar(labels, values),
+    "horizontal_bar":lambda ax,title, labels, values, x_values, x_label, y_label :ax.barh(labels, values),
+    "pie":lambda ax,title, labels, values, x_values, x_label, y_label :ax.pie(values, labels=labels, autopct="%1.1f%%"),
+    "scatter":lambda ax,title, labels, values, x_values, x_label, y_label :ax.scatter(values, labels=labels, autopct="%1.1f%%"),
+    "histogram":lambda ax,title, labels, values, x_values, x_label, y_label :ax.hist(values, bins=10)
+}
+
+    
+
+        
+    
+
 
